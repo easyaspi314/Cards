@@ -27,6 +27,11 @@ int seed_checker = 1; /*
 */
 Deck *create_deck(int deck_nmb, int jokers, int shuffle_markers){
   Deck *new_deck = malloc(sizeof(Deck));
+  if(new_deck == NULL){
+    printf("ERROR: heap memory full.\n");
+    exit(EXIT_FAILURE);
+  }
+  
   new_deck->cards_nmb = deck_nmb * CARDS_IN_DECK;
   new_deck->jokers = jokers;
   new_deck->shuffle_markers = shuffle_markers;
