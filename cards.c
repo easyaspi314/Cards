@@ -25,9 +25,17 @@ int seed_checker = 1; /*
    shuffle_markers = Number of shuffle markers in the deck. Once a shuffle marker card is drawn,
    all the cards are shuffled back into the deck, including the shuffle marker.
 */
-Deck create_deck(int deck_nmb, int jokers, int shuffle_markers){
-  Deck new_deck = {deck_nmb * CARDS_IN_DECK, jokers, shuffle_markers};
-  initialize(new_deck.checker.cards); /* Initializes the cards array, setting all values to 0. This
+Deck *create_deck(int deck_nmb, int jokers, int shuffle_markers){
+  Deck *new_deck = malloc(sizeof(Deck));
+  if(new_deck == NULL){
+    printf("ERROR: heap memory full.\n");
+    exit(EXIT_FAILURE);
+  }
+  
+  new_deck->cards_nmb = deck_nmb * CARDS_IN_DECK;
+  new_deck->jokers = jokers;
+  new_deck->shuffle_markers = shuffle_markers;
+  initialize(new_deck->checker.cards); /* Initializes the cards array, setting all values to 0. This
                                          indicates that no card has been drawn yet */
   return new_deck;
 }
@@ -47,7 +55,7 @@ Card draw(Deck *deck){
      This is done by simply resetting the deck.checker.cards array and to 0, together with
      the deck.checker.jokers variable
   */
-  if(all_cards_drawn(*deck) && all_jokers_drawn(*deck)){
+  if(all_cards_drawn(deck) && all_jokers_drawn(deck)){
     printf("All cards have been drawn. Shuffling...\n");
     initialize(deck->checker.cards);
     deck->checker.jokers = 0;
@@ -60,7 +68,7 @@ Card draw(Deck *deck){
      if a card is drawn but no more copies of that card should exist in the deck, the deck.checker.cards
      array is gone through, looking for the first available card after the randomly drawn card.
   */
-  int total_cards = available_cards(*deck);
+  int total_cards = available_cards(deck);
   Card drawn_card;
 
   /*
@@ -200,16 +208,27 @@ static Card next_available(Card card, Deck *deck){
   return new_card;
 }
 
-// Returns the number of cards that have NOT been drawn in the deck
-int available_cards(Deck deck){
-  int cards_count = 0;
-  int maximum_occurencies = deck.cards_nmb / CARDS_IN_DECK;
+/*
+   Shuffles the deck passed as a parameter. This implies resetting the deck.checker.cards array and the
+   deck.checker.jokers variable. "Shuffling", in this case, does NOT mean shuffling all the cards that
+   are yet to be drawn in the deck. Think of it as collecting all the cards that have already been dealt
+   and shuffling them back with the cards that haven't been drawn.
+*/
+void shuffle(Deck *deck){
+  initialize(deck->checker.cards);
+  deck->checker.jokers = 0;
+}
 
-  cards_count += (deck.jokers - deck.checker.jokers);
+// Returns the number of cards that have NOT been drawn in the deck
+int available_cards(Deck *deck){
+  int cards_count = 0;
+  int maximum_occurencies = deck->cards_nmb / CARDS_IN_DECK;
+
+  cards_count += (deck->jokers - deck->checker.jokers);
 
   for(int i = 0; i < SUITS_NUMBER; i++){
     for(int k = 0; k < CARDS_PER_SUIT; k++){
-      cards_count += (maximum_occurencies - (deck.checker.cards)[i][k]);
+      cards_count += (maximum_occurencies - (deck->checker.cards)[i][k]);
     }
   }
 
@@ -217,8 +236,8 @@ int available_cards(Deck deck){
 }
 
 // Cheks if all the jokers in the deck passed as a parameter have been drawn.
-int all_jokers_drawn(Deck deck){
-  if(deck.checker.jokers == deck.jokers){
+int all_jokers_drawn(Deck *deck){
+  if(deck->checker.jokers == deck->jokers){
     return 1;
   }
   return 0;
@@ -229,12 +248,12 @@ int all_jokers_drawn(Deck deck){
    have been drawn. It does so by checking if all the values in the deck.checker.cards array have
    reached the maximum number of occurencies.
 */
-int all_cards_drawn(Deck deck){
-  int max_occurencies = deck.cards_nmb / CARDS_IN_DECK; // Maximum number of occurencies that a card can have.
+int all_cards_drawn(Deck *deck){
+  int max_occurencies = deck->cards_nmb / CARDS_IN_DECK; // Maximum number of occurencies that a card can have.
 
   for(int i = 0; i < SUITS_NUMBER; i++){
     for(int k = 0; k < CARDS_PER_SUIT; k++){
-      if((deck.checker.cards)[i][k] < max_occurencies){
+      if((deck->checker.cards)[i][k] < max_occurencies){
         return 0;
       }
     }
@@ -243,7 +262,7 @@ int all_cards_drawn(Deck deck){
 }
 
 // Returns a string literal for the suit of the card passed as a parameter.
-char *suit(Card card){
+const char *suit(Card card){
   switch(card.suit){
     case 0: return "Hearts";
     case 1: return "Diamonds";
@@ -257,7 +276,7 @@ char *suit(Card card){
 }
 
 // Returns a string literal for the value of the card passed as a parameter.
-char *value(Card card){
+const char *value(Card card){
   switch(card.value){
     case 0: return "Ace";
     case 1: return "Two";

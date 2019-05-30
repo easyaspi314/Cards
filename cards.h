@@ -1,13 +1,8 @@
 #ifndef CARDS_H
 #define CARDS_H
 
-#ifndef CARDS_PER_SUIT
 #define CARDS_PER_SUIT  13
-#endif
-
-#ifndef SUITS_NUMBER
 #define SUITS_NUMBER 4
-#endif
 
 typedef enum {HEARTS, DIAMONDS, SPADES, CLUBS, JOKER, SHUFFLE_MARKER} Suit;
 typedef enum {ACE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, JOKER_VALUE, SHUFFLE_MARKER_VALUE} Value;
@@ -50,7 +45,7 @@ typedef struct{
    shuffle_markers = Number of shuffle markers in the deck. Once a shuffle marker card is drawn,
    all the cards are shuffled back into the deck, including the shuffle marker.
 */
-Deck create_deck(int deck_nmb, int jokers, int shuffle_markers);
+Deck *create_deck(int deck_nmb, int jokers, int shuffle_markers);
 
 /*
    Draws a card from the deck passed as a parameter and returns it. To track the number of the drawn cards
@@ -59,23 +54,31 @@ Deck create_deck(int deck_nmb, int jokers, int shuffle_markers);
 */
 Card draw(Deck *deck);
 
+/*
+   Shuffles the deck passed as a parameter. This implies resetting the deck.checker.cards array and the
+   deck.checker.jokers variable. "Shuffling", in this case, does NOT mean shuffling all the cards that
+   are yet to be drawn in the deck. Think of it as collecting all the cards that have already been dealt
+   and shuffling them back with the cards that haven't been drawn.
+*/
+void shuffle(Deck *deck);
+
 // Returns the number of cards that have NOT been drawn in the deck
-int available_cards(Deck deck);
+int available_cards(Deck *deck);
 
 /*
    Cheks if all the cards (shuffle markers and jokers not included) in the deck passed as a parameter
    have been drawn. It does so by checking if all the values in the deck.checker.cards array have
    reached the maximum number of occurencies.
 */
-int all_cards_drawn(Deck deck);
+int all_cards_drawn(Deck *deck);
 
 // Cheks if all the jokers in the deck passed as a parameter have been drawn.
-int all_jokers_drawn(Deck deck);
+int all_jokers_drawn(Deck *deck);
 
 // Returns a string literal for the value of the card passed as a parameter.
-char *value(Card card);
+const char *value(Card card);
 
 // Returns a string literal for the suit of the card passed as a parameter.
-char *suit(Card card);
+const char *suit(Card card);
 
 #endif
