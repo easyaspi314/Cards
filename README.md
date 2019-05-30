@@ -40,7 +40,7 @@ Given a ```Deck new_deck``` variable you can access the number of its cards (dra
 **_To create a new deck:_**
 
 ```c
-Deck new_deck = create_deck(NUMBER_OF_DECKS, NUMBER_OF_JOKERS, NUMBER_OF_SHUFFLE_MARKERS);
+Deck *new_deck = create_deck(NUMBER_OF_DECKS, NUMBER_OF_JOKERS, NUMBER_OF_SHUFFLE_MARKERS);
 ```
 _NUMBER_OF_DECKS_ indicates the number of decks the new deck will be made out of. For example, keeping in mind that a standard deck of playing cards has 52 cards (13 per suit), if NUMBER_OF_DECKS = 3 the new_deck will be made out of 3 * 52 cards, with 3 copies of each card.
 _NUMBER_OF_JOKERS_ indicates the number of jokers present in the deck.
@@ -49,7 +49,7 @@ _NUMBER_OF_SHUFFLE_MARKERS_ specifies how many shuffle markers are there in the 
 **_To draw a card:_**
 
 ```c
-Card drawn_card = draw(&deck);
+Card drawn_card = draw(new_deck);
 ```
 
 Where deck is the deck from which you want your card to be drawn from.
@@ -59,8 +59,16 @@ _The decks get shuffled automatically once all cards have been drawn from it_
 **_To check the number of cards yet to be drawn_**
 
 ```c
-int not_drawn = available_cards(Deck);
+int not_drawn = available_cards(new_deck);
 ``` 
+
+**_To shuffle the deck_**
+
+```c
+shuffle(new_deck);
+```
+
+Keep in mind that shuffling here means taking all the dealt cards and shuffling them back into the deck.
 
 # In conclusion
 
