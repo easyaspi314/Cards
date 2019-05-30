@@ -62,7 +62,7 @@ _The decks get shuffled automatically once all cards have been drawn from it_
 int not_drawn = available_cards(new_deck);
 ``` 
 
-**_To shuffle the deck_**
+**_To shuffle a deck_**
 
 ```c
 shuffle(new_deck);
